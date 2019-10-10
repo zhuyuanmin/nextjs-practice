@@ -13,14 +13,16 @@ const Title = styled.h1`
 const Comp = dynamic(import('../../components/comp'))
 const { serverRuntimeConfig, publicRuntimeConfig } = getConfig()
 
-const Home = ({ router, name, time }) => {
+const Home = props => {
+  console.log(props)
+  const { router, name, time, num } = props
   console.log(serverRuntimeConfig, publicRuntimeConfig)
   return (
     <>
       <Comp>
         <Title>This is Title - {time}</Title>
         <a>Welcome to Home!</a>
-        { router.query.id } { name } { process.env.customKey }
+        { router.query.id } { name } { process.env.customKey } num:{num}
       </Comp>
       <style jsx global>{`
         a {
@@ -39,11 +41,13 @@ const Home = ({ router, name, time }) => {
 
 Home.getInitialProps = async ctx => {
   // console.log(ctx)
+  ctx.reduxStore.dispatch({type: 'add', num: 3})
   const moment = await import('moment')
   return new Promise(resolve => {
     setTimeout(() => {
       resolve({
         name: 'jokcy',
+        num: ctx.reduxStore.getState().count.num,
         time: moment.default(Date.now() - 60 * 1000).fromNow()
       })
     }, 1000)
