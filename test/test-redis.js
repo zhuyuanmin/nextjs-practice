@@ -11,6 +11,7 @@ async function test() {
   await redis.setex('xxx', 100, 'xyz')
   await redis.set('a', 987)
   await redis.get('b')
+  await redis.del('b')
   console.log(keys)
 }
 test()

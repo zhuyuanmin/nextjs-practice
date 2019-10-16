@@ -3,6 +3,7 @@ import { withRouter } from 'next/router'
 import dynamic from 'next/dynamic' // 异步加载组件的包
 import styled from 'styled-components'
 import getConfig from 'next/config'
+import axios from 'axios'
 // import moment from 'moment'
 
 const color = '#223366'
@@ -21,7 +22,7 @@ const Home = props => {
     <>
       <Comp>
         <Title>This is Title - {time}</Title>
-        <a>Welcome to Home!</a>
+        <a href={publicRuntimeConfig.OAUTH_URL}>Welcome to Github!</a>
         { router.query.id } { name } { process.env.customKey } num:{num}
       </Comp>
       <style jsx global>{`

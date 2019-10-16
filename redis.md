@@ -3,7 +3,7 @@
 3. keys * # 列出所有keys
 4. del key # 删除某个key
 5. 修改redis认证密码：
-  1）修改port 6378 
+  1）修改port 6378 (默认6379)
   2）开启requirepass foobared => requirepass 123456(密码)
   3）$ redis-server --service-start
   4）redis-cli -p 6378
