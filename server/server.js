@@ -32,49 +32,17 @@ app.prepare().then(() => {
   // 处理auth
   auth(server)
 
-  server.use(async (ctx, next) => {
-    // if (!ctx.session.user) {
-    //   ctx.session.user = {
-    //     username: 'Jokcy',
-    //     age: 18
-    //   }
-    // } else {
-      console.log('session is:', ctx.session)
-    // }
-    await next()
-  })
-
-  router.get('/api/userInfo', async ctx => {
-    const user = ctx.session.userInfo
-    if (!user) {
-      ctx.status = 401
-      ctx.body = 'Need Login'
-    } else {
-      ctx.set('Content-Type', 'appliction/json')
-      ctx.body = user
-    }
-  })
-
-  router.get('/home/index/:id', async ctx => {
-    const id = ctx.params.id
-    await hanlde(ctx.req, ctx.res, {
-      pathname: '/home/index',
-      query: { id }
-    })
-    ctx.respond = false
-  })
-
-  // router.get('/test/:id', ctx => {
-  //   // ctx.body = `<p>request /test ${ctx.params.id}</p>`
-  //   ctx.body = { success: true }
-  //   ctx.set('Content-type', 'application/json')
-  // })
   server.use(router.routes()) // 注意此处需要优先加载路由
 
   server.use(async (ctx, next) => {
+    ctx.req.session = ctx.session
     await hanlde(ctx.req, ctx.res)
     ctx.respond = false
-    next()
+  })
+
+  server.use(async (ctx, next) => {
+    ctx.res.statusCode = 200
+    await next()
   })
 
   server.listen(3000, () => {

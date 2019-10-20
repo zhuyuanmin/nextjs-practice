@@ -1,53 +1,38 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 import ReduxThunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
+import axios from 'axios'
 
-function add(num) {
-  return { type: 'add', num }
-}
+const userInitialState = {}
 
-function addAsync(num) {
+const LOGOUT = 'LOGOUT'
+export function logout() {
   return dispatch => {
-    setTimeout(() => {
-      dispatch(add(num))
-    }, 1000)
+    axios.post('/logout').then(resp => {
+      if (resp.status === 200) {
+        dispatch({
+          type: LOGOUT
+        })
+      } else {
+        console.log('logout failed', resp)
+      }
+    }).catch(err => {
+        console.log('logout failed', err)
+    })
   }
 }
 
-const initialState = {
-  count: 0
-}
-
-const userInitialState = {
-  username: 'jokcy',
-  age: 18
-}
-
-function countReducer(state = initialState, action) {
-  switch (action.type) {
-    case 'add':
-      return { count: state.count + 1, num: action.num || 1 }
-    case 'del':
-      return { count: state.count - 1, num: state.num }
-    default:
-      return state
-  }
-}
 
 function userReducer(state = userInitialState, action) {
   switch(action.type) {
-    case 'updateName':
-      return {
-        ...state,
-        username: action.name
-      }
+    case LOGOUT:
+      return {}
     default:
       return state
   }
 }
 
 const allReducers = combineReducers({
-  count: countReducer,
   user: userReducer
 })
 
@@ -55,7 +40,6 @@ export default function initializeStore(state) {
   const store = createStore(
     allReducers, 
     Object.assign({}, {
-      count: initialState,
       user: userInitialState
     }, state),
     composeWithDevTools(applyMiddleware(ReduxThunk))
