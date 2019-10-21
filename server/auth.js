@@ -22,7 +22,7 @@ module.exports = (server) => {
         }
       })
       if (result.status === 200 && !result.data.error) {
-        ctx.session.gethubAuth = result.data
+        ctx.session.githubAuth = result.data
         const { token_type, access_token } =  result.data
         const userInfo = await axios({
           method: 'GET',

@@ -4,6 +4,7 @@ const next = require('next')
 const session = require('koa-session')
 const Redis = require('ioredis')
 const auth = require('./auth')
+const api = require('./api')
 
 const { RedisSessionStore } = require('./session-store')
 
@@ -31,6 +32,7 @@ app.prepare().then(() => {
   server.use(session(SESSION_CONFIG, server))
   // 处理auth
   auth(server)
+  api(server)
 
   server.use(router.routes()) // 注意此处需要优先加载路由
 
