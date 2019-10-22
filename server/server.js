@@ -2,6 +2,7 @@ const Koa = require('koa')
 const Router = require('koa-router')
 const next = require('next')
 const session = require('koa-session')
+const koaBody = require('koa-body')
 const Redis = require('ioredis')
 const auth = require('./auth')
 const api = require('./api')
@@ -23,6 +24,9 @@ app.prepare().then(() => {
   const router = new Router()
 
   server.keys = ['Welcome all developer to GET owner App']
+
+  server.use(koaBody)
+  
   const SESSION_CONFIG = {
     key: 'jid',
     maxAge: 10 * 60 * 1000,
