@@ -9,7 +9,7 @@ module.exports = server => {
       const githubAuth = session && session.githubAuth
       const headers = {}
       if (githubAuth && githubAuth.access_token) {
-        headers['Authorization'] = `${githubAuth.access_type} ${githubAuth.access_token}`
+        headers['Authorization'] = `${githubAuth.token_type} ${githubAuth.access_token}`
       }
 
       const result = await requestGithub(

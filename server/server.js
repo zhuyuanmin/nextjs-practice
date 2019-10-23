@@ -25,7 +25,7 @@ app.prepare().then(() => {
 
   server.keys = ['Welcome all developer to GET owner App']
 
-  server.use(koaBody)
+  server.use(koaBody())
   
   const SESSION_CONFIG = {
     key: 'jid',
@@ -52,6 +52,6 @@ app.prepare().then(() => {
   })
 
   server.listen(3000, () => {
-    console.log('koa server listening on 3000')
+    console.log('Koa server is listening on 3000')
   })
 })

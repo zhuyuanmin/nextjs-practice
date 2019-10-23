@@ -93,7 +93,7 @@ function MyLayout({ children, user, logout, router }) {
       </Header>
       <Content>
         <Container renderer={
-          <Comp color="red" style={{ fontSize: 40 }} />
+          <Comp style={{ fontSize: 20 }} />
         }>{ children }</Container>
       </Content>
       <Footer>
