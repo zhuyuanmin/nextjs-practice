@@ -1,11 +1,36 @@
+import { useEffect } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'next/router'
+import Router, { withRouter } from 'next/router'
 const { request } = require('../lib/api')
-import { Button, Icon } from 'antd'
+import { Button, Icon, Tabs } from 'antd'
 import Repo from '../components/Repo'
+import LRU from 'lru-cache' // 缓存
+
+const isServer = typeof window === 'undefined'
+
+const cache = new LRU({
+  maxAge: 1000 * 60 * 10
+})
 
 function Index({ userRepos, userStarredRepos, user, router }) {
   console.log(userRepos, userStarredRepos, user)
+
+  const tabKey = router.query.key || '1'
+
+  const handleTabChange = (activeKey) => {
+    Router.push(`/?key=${activeKey}`)
+  }
+
+  useEffect(() => {
+    if (!isServer) {
+      if (userRepos) {
+        cache.set('userRepos', userRepos)
+      }
+      if (userStarredRepos) {
+        cache.set('userStarredRepos', userStarredRepos)
+      }
+    } 
+  }, [userRepos, userStarredRepos])
 
   if (!user || !user.id) {
     return <div className="root">
@@ -35,9 +60,18 @@ function Index({ userRepos, userStarredRepos, user, router }) {
         </p>
       </div>
       <div className="user-repos">
-        {
-          userRepos.map(repo => <Repo key={repo.id} repo={repo}></Repo>)
-        }
+        <Tabs activeKey={tabKey} onChange={handleTabChange}>
+          <Tabs.TabPane tab="你的仓库" key="1">
+          {userRepos.map(repo => (
+            <Repo key={repo.id} repo={repo}></Repo>
+          ))}
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="你关注的仓库" key="2">
+          {userStarredRepos.map(repo => (
+            <Repo key={repo.id} repo={repo}></Repo>
+          ))}
+          </Tabs.TabPane>
+        </Tabs>
       </div>
       <style jsx>{`
         .root {
@@ -83,6 +117,15 @@ Index.getInitialProps = async ( { ctx, reduxStore }) => {
     return
   }
 
+  if (!isServer) {
+    if (cache.get('userRepos') && cache.get('userStarredRepos')) {
+      return {
+        userRepos: cache.get('userRepos'),
+        userStarredRepos: cache.get('userStarredRepos')
+      }
+    }
+  }
+
   const userRepos = await request({
     url: '/user/repos'
   }, ctx.req, ctx.res)
@@ -96,8 +139,11 @@ Index.getInitialProps = async ( { ctx, reduxStore }) => {
     userStarredRepos: userStarredRepos.data
   }
 }
-export default connect(state => {
-  return {
-    user: state.user
-  }
-})(withRouter(Index))
+// 坑：withRouter必须放置在connect的外面
+export default withRouter(
+  connect(state => {
+    return {
+      user: state.user
+    }
+  })(Index)
+)
