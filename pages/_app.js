@@ -40,7 +40,6 @@ class MyApp extends App {
     const { Component } = ctx
     if (Component.getInitialProps) {
       const pageProps = await Component.getInitialProps(ctx)
-      console.log(pageProps)
       return {
         pageProps
       }
