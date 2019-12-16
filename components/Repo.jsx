@@ -15,7 +15,7 @@ export default ({ repo }) => {
     <div className="root">
       <div className="basic-info">
         <h3 className="repo-title">
-          <Link href={repo.html_url || `detail?owner=${repo.owner.login}&name=&{repo.name}`}>
+          <Link href={`detail?owner=${repo.owner.login}&name=${repo.name}`}>
             <a>{repo.full_name}</a>
           </Link>
         </h3>

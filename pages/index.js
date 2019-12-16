@@ -13,8 +13,6 @@ const cache = new LRU({
 })
 
 function Index({ userRepos, userStarredRepos, user, router }) {
-  console.log(userRepos, userStarredRepos, user)
-
   const tabKey = router.query.key || '1'
 
   const handleTabChange = (activeKey) => {
