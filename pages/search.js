@@ -1,10 +1,11 @@
-import { useCallback, memo, isValidElement } from 'react'
+import { useCallback, memo, isValidElement, useEffect } from 'react'
 import { withRouter } from 'next/router'
 import { Row, Col, List, Pagination } from 'antd'
 import Link from 'next/link'
 import Router from 'next/router'
 import Repo from '../components/Repo'
 import api from '../lib/api'
+import { cacheArray } from '../lib/repo-basic-cache'
 const LANGUAGES = [
   'JavaScript', 'HTML', 'CSS',
   'TypeScript', 'Java', 'Ruby'
@@ -45,12 +46,7 @@ function noop() {}
 
 const per_page = 10
 
-/**
- * @param sort 排序方法
- * @param order 排序顺序
- * @param lang 仓库项目开发主语言
- * @param page 分页页面
- */
+const isServer = typeof window === 'undefined'
 
 const FilterLink = memo(({ name, query, lang, sort, order, page }) => {
   // const doSearch = () => {
@@ -82,6 +78,12 @@ function Search({ router, repos }) {
   //     query: config
   //   })
   // }, [])
+
+  useEffect(() => {
+    if (!isServer) {
+      cacheArray(repos.items)
+    }
+  })
 
   return (
     <div className="root">

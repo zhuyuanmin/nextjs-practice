@@ -4,13 +4,9 @@ import Router, { withRouter } from 'next/router'
 const { request } = require('../lib/api')
 import { Button, Icon, Tabs } from 'antd'
 import Repo from '../components/Repo'
-import LRU from 'lru-cache' // 缓存
+import { cache } from '../lib/repo-basic-cache'
 
 const isServer = typeof window === 'undefined'
-
-const cache = new LRU({
-  maxAge: 1000 * 60 * 10
-})
 
 function Index({ userRepos, userStarredRepos, user, router }) {
   const tabKey = router.query.key || '1'

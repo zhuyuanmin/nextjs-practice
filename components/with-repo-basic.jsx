@@ -1,7 +1,9 @@
+import { useEffect } from 'react'
 import api from '../lib/api'
 import Repo from './Repo'
 import Link from 'next/link'
 import { withRouter } from 'next/router'
+import { getCache, setCache } from '../lib/repo-basic-cache'
 
 function makeQuery(queryObject) {
   const query = Object.entries(queryObject)
@@ -12,9 +14,16 @@ function makeQuery(queryObject) {
   return `?${query}`
 }
 
+const isServer = typeof window === 'undefined'
 export default function(Comp, type = 'index') {
   function WithDetail({ repoBasic, router, ...rest }) {
-    console.log(repoBasic)
+
+    useEffect(() => {
+      if (!isServer) {
+        setCache(repoBasic)
+      }
+    })
+
     return (
       <div className="root">
         <div className="repo-basic">
@@ -40,6 +49,9 @@ export default function(Comp, type = 'index') {
             .root {
               padding-top: 20px;
             }
+            .tabs {
+              border-bottom: 1px solid #ccc;
+            }
             .repo-basic {
               padding: 20px;
               border: 1px solid #eee;
@@ -59,14 +71,24 @@ export default function(Comp, type = 'index') {
     // console.log(ctx.query)
     const { router, ctx } = context
     const { owner, name } = ctx.query
-    const repoBasic = await api.request({
-      url: `/repos/${owner}/${name}`
-    }, ctx.req, ctx.res)
-    
+
+    const full_name = `${owner}/${name}`
+
     let pageData = {}
     if (Comp.getInitialProps) {
       pageData = await Comp.getInitialProps(context)
     }
+
+    if (getCache(full_name)) {
+      return {
+        repoBasic: getCache(full_name),
+        ...pageData
+      }
+    }
+
+    const repoBasic = await api.request({
+      url: `/repos/${owner}/${name}`
+    }, ctx.req, ctx.res)
 
     return {
       repoBasic: repoBasic.data,

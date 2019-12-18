@@ -1,4 +1,6 @@
+const webpack = require('webpack')
 const withCss = require('@zeit/next-css')
+const withBundleAnalyzer = require('@zeit/next-bundle-analyzer')
 const config = require('./config')
 
 const configs = {
@@ -40,8 +42,12 @@ if (typeof require !== 'undefined') {
   require.extensions['.css'] = file => {}
 }
 
-module.exports = withCss({
+module.exports = withBundleAnalyzer(withCss({
   // distDir: 'dest'
+  webpack(config, options) {
+    config.plugins.push(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/))
+    return config
+  },
   env: {
     customKey: 'value'
   },
@@ -52,5 +58,16 @@ module.exports = withCss({
   publicRuntimeConfig: {
     staticFolder: '/static',
     OAUTH_URL: config.github.github_oAuth_url
+  },
+  analyzeBrowser: ['browser', 'both'].includes(process.env.BUNDLE_ANALYZE),
+  bundleAnalyzerConfig: {
+    server: {
+      analyzerMode: 'static',
+      reportFilename: '../bundles/server.html'
+    },
+    browser: {
+      analyzerMode: 'static',
+      reportFilename: '../bundles/client.html'
+    }
   }
-})
+}))

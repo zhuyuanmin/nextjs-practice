@@ -6,18 +6,21 @@ const koaBody = require('koa-body')
 const Redis = require('ioredis')
 const auth = require('./auth')
 const api = require('./api')
+const atob = require('atob')
 
 const { RedisSessionStore } = require('./session-store')
 
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
-const hanlde = app.getRequestHandler()
+const handler = app.getRequestHandler()
 
 const redis = new Redis({
   port: 6378,
   host: '127.0.0.1',
   password: '123456'
 })
+
+global.atob = atob
 
 app.prepare().then(() => {
   const server = new Koa()
@@ -42,7 +45,7 @@ app.prepare().then(() => {
 
   server.use(async (ctx, next) => {
     ctx.req.session = ctx.session
-    await hanlde(ctx.req, ctx.res)
+    await handler(ctx.req, ctx.res)
     ctx.respond = false
   })
 
