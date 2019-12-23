@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 const MDRenderer = dynamic(
   () => import('../../components/MarkdownRenderer'),
   {
-    loading: () => <p>Loading</p>
+    loading: () => <p>Loading...</p>
   }
 )
 
